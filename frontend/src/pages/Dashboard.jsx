@@ -10,6 +10,7 @@ const [user, setUser] = useState(null);
 const [loading, setLoading] = useState(true);
 const [showSuccessModal, setShowSuccessModal] = useState(false); // ✅ modal state
 const [successMessage, setSuccessMessage] = useState(""); // dynamic message
+const [loadingStatus, setLoadingStatus] = useState({});
 
 // Check login
 useEffect(() => {
@@ -55,20 +56,24 @@ const handleLogout = () => {
 
 // Update status with success modal
 const updateStatus = async (index, newStatus) => {
-    const enrollment = data[index];
-    try {
+const enrollment = data[index];
+setLoadingStatus((prev) => ({ ...prev, [enrollment.enrollmentId]: true }));
+
+try {
     await api.patch(`/enrollments/${enrollment.enrollmentId}`, { status: newStatus });
+    
     const updated = [...data];
     updated[index].status = newStatus;
     setData(updated);
 
-    // Show success modal
     setSuccessMessage(`Status updated to ${newStatus} for ${enrollment.childName}`);
     setShowSuccessModal(true);
 
-    } catch (err) {
+} catch (err) {
     console.error(err.response?.data || err.message);
-    }
+} finally {
+    setLoadingStatus((prev) => ({ ...prev, [enrollment.enrollmentId]: false }));
+}
 };
 
 const exportToExcel = () => {
@@ -149,22 +154,29 @@ return (
                 {item.status}
                 </td>
                 <td className="px-6 py-4 text-sm space-x-2">
-                {item.status !== "Approved" && (
+                    {item.status !== "Approved" && (
                     <button
-                    onClick={() => updateStatus(index, "Approved")}
-                    className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded transition"
+                        onClick={() => updateStatus(index, "Approved")}
+                        disabled={loadingStatus[item.enrollmentId]}
+                        className={`bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded transition ${
+                        loadingStatus[item.enrollmentId] ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     >
-                    Approve
+                        {loadingStatus[item.enrollmentId] ? "Updating..." : "Approve"}
                     </button>
-                )}
-                {item.status !== "Rejected" && (
+                    )}
+
+                    {item.status !== "Rejected" && (
                     <button
-                    onClick={() => updateStatus(index, "Rejected")}
-                    className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition"
+                        onClick={() => updateStatus(index, "Rejected")}
+                        disabled={loadingStatus[item.enrollmentId]}
+                        className={`bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition ${
+                        loadingStatus[item.enrollmentId] ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     >
-                    Reject
+                        {loadingStatus[item.enrollmentId] ? "Updating..." : "Reject"}
                     </button>
-                )}
+                    )}
                 </td>
             </tr>
             ))}

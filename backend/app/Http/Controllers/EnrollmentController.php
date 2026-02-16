@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EnrollmentStatusUpdate;
+use App\Mail\ParentConfirmation;
+use App\Mail\StaffAlert;
 use App\Models\Enrollment;
 use App\Models\Student;
 use App\Models\student_parent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class EnrollmentController extends Controller
 {
@@ -39,6 +43,15 @@ public function store(Request $request)
             'status' => 'Pending',
         ]);
 
+        // Send email to parent
+        Mail::to($parent->email)->send(new ParentConfirmation($student));
+
+    // Send email to staff
+        // $staff = auth('sanctum')->user();
+        // $staffEmail = $staff->email ?? "staff@email.com"; // default test email
+        $staffEmail = "staff@example.com"; // default test email
+        Mail::to($staffEmail)->send(new StaffAlert($student));
+
         return response()->json([
             'success' => true,
             'message' => 'Enrollment submitted successfully',
@@ -63,10 +76,13 @@ public function store(Request $request)
         $enrollment = Enrollment::findOrFail($id);
 
         $request->validate([
-            'status' => 'required|in:Pending,Approved,Rejected',
+            'status' => 'required',
         ]);
 
         $enrollment->update(['status' => $request->status]);
+        
+        // Send email to parent after status change
+        Mail::to($enrollment->student->parent->email)->send(new EnrollmentStatusUpdate($enrollment));
 
         return response()->json([
             'success' => true,

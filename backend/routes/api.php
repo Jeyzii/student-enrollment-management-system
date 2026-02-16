@@ -24,7 +24,7 @@ Route::post('/staff/login', [AuthController::class, 'login'])
 Route::post('/enroll', [EnrollmentController::class, 'store'])
     ->middleware('throttle:5,1');
 
-Route::middleware(['auth:sanctum', 'throttle:5,1'])->group(function() {
+Route::middleware(['auth:sanctum'])->group(function() {
     Route::get('/students', [StudentController::class, 'index']);
     // Route::get('/enrollments', [EnrollmentController::class, 'index']);
     Route::patch('/enrollments/{id}', [EnrollmentController::class, 'update']);

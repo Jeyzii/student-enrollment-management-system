@@ -13,4 +13,9 @@ class Enrollment extends Model
 
 
     protected $fillable = ['student_id', 'status'];
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
 }

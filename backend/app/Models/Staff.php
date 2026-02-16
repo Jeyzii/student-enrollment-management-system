@@ -10,8 +10,9 @@ class Staff extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
+    protected $table = 'staff'; // your table name
     protected $fillable = ['name', 'email', 'password'];
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'remember_token'];
 
     public function setPasswordAttribute($password)
     {
