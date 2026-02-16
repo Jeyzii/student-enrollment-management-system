@@ -18,15 +18,12 @@ use App\Http\Controllers\ParentController;
 |
 */
 
-// Limit login to 5 requests per 1 minute
 Route::post('/staff/login', [AuthController::class, 'login'])
     ->middleware('throttle:5,1');
 
-// Limit enrollment submissions to 5 per 1 minute
 Route::post('/enroll', [EnrollmentController::class, 'store'])
     ->middleware('throttle:5,1');
 
-// Protected routes
 Route::middleware(['auth:sanctum', 'throttle:5,1'])->group(function() {
     Route::get('/students', [StudentController::class, 'index']);
     // Route::get('/enrollments', [EnrollmentController::class, 'index']);
