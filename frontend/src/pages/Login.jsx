@@ -26,16 +26,16 @@ if (!validate()) return;
 try {
     const res = await api.post("/staff/login", {
     email: form.email,
-    password: form.password
+    password: form.password,
     });
 
-    const { token, user } = res.data;
+    const { token, staff } = res.data;
 
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.staff)); // ← use "staff"
-    navigate("/dashboard");
+    // Store token and staff
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(staff));
 
-
+    navigate("/dashboard", { replace: true }); // redirect to dashboard
 } catch (err) {
     if (err.response?.status === 401) {
     setErrors({ password: "Invalid credentials" });
@@ -46,6 +46,7 @@ try {
     }
 }
 };
+
 
 
 
