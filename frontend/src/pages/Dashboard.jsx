@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import api from "../api";
+import useAutoLogout from "../hooks/useAutoLogout";
 
 const Dashboard = () => {
 const navigate = useNavigate();
@@ -48,11 +49,17 @@ useEffect(() => {
     fetchEnrollments();
 }, []);
 
-const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login", { replace: true });
+const handleLogout = async () => {
+try {
+    await api.post("/logout");
+} catch (e) {}
+
+localStorage.clear();
+navigate("/login", { replace: true });
 };
+
+//auto logout after 5 minutes of inactivity
+useAutoLogout(handleLogout, 5 * 60 * 1000);
 
 // Update status with success modal
 const updateStatus = async (index, newStatus) => {

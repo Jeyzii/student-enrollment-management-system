@@ -20,6 +20,11 @@ use App\Http\Controllers\ParentController;
 
 Route::post('/staff/login', [AuthController::class, 'login'])
     ->middleware('throttle:5,1');
+    
+Route::post('/logout', function (Request $request) {
+    $request->user()->currentAccessToken()->delete();
+    return response()->json(['message' => 'Logged out']);
+})->middleware('auth:sanctum');
 
 Route::post('/enroll', [EnrollmentController::class, 'store'])
     ->middleware('throttle:5,1');
