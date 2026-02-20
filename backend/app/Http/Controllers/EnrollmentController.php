@@ -17,7 +17,7 @@ public function store(Request $request)
 {
     $request->validate([
         'parent_name' => 'required|string|max:255',
-        'parent_email' => 'required|email|unique:student_parents,email',
+        'parent_email' => 'required|email',
         'parent_contact' => 'required|string',
         'parent_relationship' => 'required|string',
         'child_name' => 'required|string|max:255',
@@ -46,10 +46,10 @@ public function store(Request $request)
         // Send email to parent
         Mail::to($parent->email)->send(new ParentConfirmation($student));
 
-    // Send email to staff
-        // $staff = auth('sanctum')->user();
-        // $staffEmail = $staff->email ?? "staff@email.com"; // default test email
-        $staffEmail = "staff@example.com"; // default test email
+        // Send email to staff
+        $staff = auth('sanctum')->user();
+        $staffEmail = $staff->email ?? "staff@email.com"; // default test email
+        // $staffEmail = "staff@email.com"; // default test email
         Mail::to($staffEmail)->send(new StaffAlert($student));
 
         return response()->json([

@@ -129,7 +129,7 @@ const Enrollment = () => {
           <div>
             <label className="block text-sm font-medium text-blue-900 mb-1">Parent Contact</label>
             <input
-              type="tel"
+              type="number"
               name="parentContact"
               value={form.parentContact}
               onChange={handleChange}

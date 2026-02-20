@@ -63,24 +63,24 @@ useAutoLogout(handleLogout, 5 * 60 * 1000);
 
 // Update status with success modal
 const updateStatus = async (index, newStatus) => {
-const enrollment = data[index];
-setLoadingStatus((prev) => ({ ...prev, [enrollment.enrollmentId]: true }));
+    const enrollment = data[index];
+    setLoadingStatus((prev) => ({ ...prev, [enrollment.enrollmentId]: true }));
 
-try {
-    await api.patch(`/enrollments/${enrollment.enrollmentId}`, { status: newStatus });
-    
-    const updated = [...data];
-    updated[index].status = newStatus;
-    setData(updated);
+    try {
+        await api.patch(`/enrollments/${enrollment.enrollmentId}`, { status: newStatus });
+        
+        const updated = [...data];
+        updated[index].status = newStatus;
+        setData(updated);
 
-    setSuccessMessage(`Status updated to ${newStatus} for ${enrollment.childName}`);
-    setShowSuccessModal(true);
+        setSuccessMessage(`Status updated to ${newStatus} for ${enrollment.childName}`);
+        setShowSuccessModal(true);
 
-} catch (err) {
-    console.error(err.response?.data || err.message);
-} finally {
-    setLoadingStatus((prev) => ({ ...prev, [enrollment.enrollmentId]: false }));
-}
+    } catch (err) {
+        console.error(err.response?.data || err.message);
+    } finally {
+        setLoadingStatus((prev) => ({ ...prev, [enrollment.enrollmentId]: false }));
+    }
 };
 
 const exportToExcel = () => {
